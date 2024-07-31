@@ -10,7 +10,7 @@
 static inline void draw_board_border();
 static inline void reset_game();
 
-static inline void render_menu_logo()
+static inline void render_menu()
 {
 	const char tetris_menu[5][25] =
 	{
@@ -36,6 +36,11 @@ static inline void render_menu_logo()
 			}
 		}
 	}
+
+	uint32_t back_color = (int)(floor(state.time*6)) % 2 ? DARK_YELLOW : DARK_YELLOW;
+	uint32_t front_color = (int)(floor(state.time*6)) % 2 ? BRIGHT_YELLOW : WHITE;
+
+	render_text_center_overlay(200, 200, "PRESS ENTER TO PLAY", back_color, front_color);
 }
 
 static inline void handle_tetromino_movement();
@@ -55,7 +60,7 @@ const char line_clear_string[4][9] =
 	"TETRIS!!"
 };
 
-static inline uint16_t line_clear_points(line_clear_t type)
+static inline uint16_t line_clear_points(line_clear_type_t type)
 {
 	switch (type)
 	{
@@ -70,15 +75,15 @@ static inline uint16_t line_clear_points(line_clear_t type)
 	}
 }
 
-static inline void render_achievement_message()
+static inline void render_line_clear_message()
 {
-	render_text_overlay(25, 150, line_clear_string[state.latest_achievement.type], DARK_RED, WHITE);
+	render_text_overlay(25, 150, line_clear_string[state.latest_line_clear.type], DARK_RED, WHITE);
 
 	char buf[11];
-	sprintf(buf, "%u * %u", line_clear_points(state.latest_achievement.type), state.level);
+	sprintf(buf, "%u * %u", line_clear_points(state.latest_line_clear.type), state.level);
 	render_text_overlay(25, 162, buf, DARK_RED, WHITE);
 
-	sprintf(buf, "+ %u", line_clear_points(state.latest_achievement.type) * state.level);
+	sprintf(buf, "+ %u", line_clear_points(state.latest_line_clear.type) * state.level);
 	render_text_overlay(25, 174, buf, DARK_RED, WHITE);
 }
 
@@ -120,9 +125,9 @@ static inline void render_gameplay_stats()
 	render_text(pos_x+1, pos_y+1+12+64, level_buf, MID_YELLOW);
 	render_text(pos_x, pos_y+12+64, level_buf, WHITE);
 
-	if (state.latest_achievement.time + 5.0 >= state.time)
+	if (state.latest_line_clear.time + 5.0 >= state.time)
 	{
-		render_achievement_message();
+		render_line_clear_message();
 	}
 }
 
@@ -141,11 +146,10 @@ static inline void render_loss_board()
 	render_text_center_overlay(200, 125, "SCORE", DARK_YELLOW, WHITE);
 	render_text_center_overlay(200, 137, score_buf, DARK_YELLOW, WHITE);
 
-	char high_score_buf[11];
-	sprintf(high_score_buf, "%u", state.high_score);
+	sprintf(score_buf, "%u", state.high_score);
 
 	render_text_center_overlay(200, 162, "HIGHSCORE", DARK_BLUE, WHITE);
-	render_text_center_overlay(200, 174, high_score_buf, DARK_BLUE, WHITE);
+	render_text_center_overlay(200, 174, score_buf, DARK_BLUE, WHITE);
 
 }
 
@@ -311,32 +315,32 @@ static inline void handle_board()
 		case 1:
 		{
 			state.score += 40 * state.level;
-			state.latest_achievement.time = state.time;
-			state.latest_achievement.type = line_clear_single;
+			state.latest_line_clear.time = state.time;
+			state.latest_line_clear.type = line_clear_single;
 			state.level = state.level;
 			break;
 		}
 		case 2:
 		{
 			state.score += 100 * state.level;
-			state.latest_achievement.time = state.time;
-			state.latest_achievement.type = line_clear_double;
+			state.latest_line_clear.time = state.time;
+			state.latest_line_clear.type = line_clear_double;
 			state.level = state.level;
 			break;
 		}
 		case 3:
 		{
 			state.score += 300 * state.level;
-			state.latest_achievement.time = state.time;
-			state.latest_achievement.type = line_clear_triple;
+			state.latest_line_clear.time = state.time;
+			state.latest_line_clear.type = line_clear_triple;
 			state.level = state.level;
 			break;
 		}
 		case 4:
 		{
 			state.score += 1200 * state.level;
-			state.latest_achievement.time = state.time;
-			state.latest_achievement.type = line_clear_tetris;
+			state.latest_line_clear.time = state.time;
+			state.latest_line_clear.type = line_clear_tetris;
 			state.level = state.level;
 			break;
 		}

@@ -30,20 +30,20 @@ typedef struct input
 
 } input_t;
 
-typedef enum line_clear
+typedef enum line_clear_type
 {
 	line_clear_single = 0,
 	line_clear_double = 1,
 	line_clear_triple = 2,
 	line_clear_tetris = 3
-} line_clear_t;
+} line_clear_type_t;
 
-typedef struct achievement_message
+typedef struct line_clear_message
 {
-	line_clear_t type;
+	line_clear_type_t type;
 	double time;
 	uint8_t level;
-} achievement_message_t;
+} line_clear_message_t;
 
 typedef struct state
 {
@@ -51,17 +51,17 @@ typedef struct state
 	tetromino_t current;
 	tetromino_t next;
 	game_state_t game_state;
+
+	// the "tick" is the point at which the tetromino drops down 1 cell
 	double time, tick_counter, tick_time_limit;
 
-	achievement_message_t latest_achievement;
+	line_clear_message_t latest_line_clear;
 
 	uint8_t level;
 	uint16_t lines;
 	uint32_t score;
 
 	uint32_t high_score;
-	
-
 } state_t;
 
 static state_t state;
@@ -90,7 +90,6 @@ int WINAPI wWinMain(
 	state.current = spawn_tetrominos[6];
 	state.next = spawn_tetrominos[5];
 	state.tick_time_limit = 0.7987;
-
 	state.game_state = game_state_menu;
 	state.level = 1;
 
@@ -113,12 +112,7 @@ int WINAPI wWinMain(
 				case game_state_menu:
 				{
 					clear_screen();
-					render_menu_logo();
-
-					uint32_t back_color = (int)(floor(state.time*6)) % 2 ? DARK_YELLOW : DARK_YELLOW;
-					uint32_t front_color = (int)(floor(state.time*6)) % 2 ? BRIGHT_YELLOW : WHITE;
-
-					render_text_center_overlay(200, 200, "PRESS ENTER TO PLAY", back_color, front_color);
+					render_menu();
 
 					HDC device_context = GetDC(window_handle);
 					win32_update_window(device_context);
@@ -130,7 +124,6 @@ int WINAPI wWinMain(
 				}
 				case game_state_gameplay:
 				{
-
 					handle_tetromino_movement();
 
 					if (state.tick_counter >= state.tick_time_limit)
@@ -140,14 +133,14 @@ int WINAPI wWinMain(
 					}
 
 					clear_screen();
+
 					draw_board_border();
-					draw_tetromino_on_board(state.current);
-
-					render_preview_tetromino();
-
 					draw_board(state.board);
 
+					draw_tetromino_on_board(state.current);
+
 					render_gameplay_stats();
+					render_preview_tetromino();
 
 					HDC device_context = GetDC(window_handle);
 					win32_update_window(device_context);
