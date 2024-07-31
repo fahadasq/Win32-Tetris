@@ -1,10 +1,6 @@
 #include <Windows.h>
-#include <memoryapi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <wingdi.h>
-#include <winnt.h>
-#include <winuser.h>
 #include <math.h>
 
 #include "colors.h"
@@ -98,11 +94,6 @@ int WINAPI wWinMain(
 	state.game_state = game_state_menu;
 	state.level = 1;
 
-	//memset(&state.board.tiles[19], 1, 10);
-	//memset(&state.board.tiles[18], 1, 10);
-	//memset(&state.board.tiles[17], 1, 10);
-	//memset(&state.board.tiles[16], 1, 10);
-
 	while (msg.message != WM_QUIT)
 	{
 		last_time = state.time;
@@ -121,31 +112,8 @@ int WINAPI wWinMain(
 			{
 				case game_state_menu:
 				{
-					const char tetris_menu[5][25] =
-					{
-						" ### ### ### ##  ### ### ",
-						"  #  #    #  # #  #  #   ",
-						"  #  ###  #  ###  #  ### ",
-						"  #  #    #  # #  #    # ",
-						"  #  ###  #  # # ### ### "
-					};
 					clear_screen();
-					for (int xx = 0; xx < 26; xx++)
-					{
-						draw_tile_on_board(xx-8, 1, TILE_BORDER);
-						draw_tile_on_board(xx-8, 1+8, TILE_BORDER);
-
-						for (int yy = 0; yy < 5; yy++)
-						{
-							if (xx == 25) break;
-
-							if (tetris_menu[yy][xx] != ' ')
-							{
-								draw_tile_on_board(xx-8, yy+3, TILE_BLUE);
-							}
-						}
-					}
-
+					render_menu_logo();
 
 					uint32_t back_color = (int)(floor(state.time*6)) % 2 ? DARK_YELLOW : DARK_YELLOW;
 					uint32_t front_color = (int)(floor(state.time*6)) % 2 ? BRIGHT_YELLOW : WHITE;
@@ -180,7 +148,6 @@ int WINAPI wWinMain(
 					draw_board(state.board);
 
 					render_gameplay_stats();
-
 
 					HDC device_context = GetDC(window_handle);
 					win32_update_window(device_context);

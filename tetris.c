@@ -12,6 +12,30 @@ static inline void reset_game();
 
 static inline void render_menu_logo()
 {
+	const char tetris_menu[5][25] =
+	{
+		" ### ### ### ##  ### ### ",
+		"  #  #    #  # #  #  #   ",
+		"  #  ###  #  ###  #  ### ",
+		"  #  #    #  # #  #    # ",
+		"  #  ###  #  # # ### ### "
+	};
+
+	for (int xx = 0; xx < 26; xx++)
+	{
+		draw_tile_on_board(xx-8, 1, TILE_BORDER);
+		draw_tile_on_board(xx-8, 1+8, TILE_BORDER);
+
+		for (int yy = 0; yy < 5; yy++)
+		{
+			if (xx == 25) break;
+
+			if (tetris_menu[yy][xx] != ' ')
+			{
+				draw_tile_on_board(xx-8, yy+3, TILE_BLUE);
+			}
+		}
+	}
 }
 
 static inline void handle_tetromino_movement();
