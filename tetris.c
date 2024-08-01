@@ -308,6 +308,13 @@ static inline void handle_board()
 		}
 	}
 
+	if (state.lines >= 60) { state.level = 7; state.tick_time_limit = 0.3827; }
+	else if (state.lines >= 50) { state.level = 6; state.tick_time_limit = 0.4659; }
+	else if (state.lines >= 40) { state.level = 5; state.tick_time_limit = 0.5491; }
+	else if (state.lines >= 30) { state.level = 4; state.tick_time_limit = 0.6323; }
+	else if (state.lines >= 20) { state.level = 3; state.tick_time_limit = 0.7155; }
+	else if (state.lines >= 10) { state.level = 2; state.tick_time_limit = 0.7987; }
+
 	switch (complete_lines_counter)
 	{
 		default: break;
@@ -344,13 +351,6 @@ static inline void handle_board()
 			break;
 		}
 	}
-
-	if (state.lines >= 60) { state.level = 7; state.tick_time_limit = 0.3827; }
-	else if (state.lines >= 50) { state.level = 6; state.tick_time_limit = 0.4659; }
-	else if (state.lines >= 40) { state.level = 5; state.tick_time_limit = 0.5491; }
-	else if (state.lines >= 30) { state.level = 4; state.tick_time_limit = 0.6323; }
-	else if (state.lines >= 20) { state.level = 3; state.tick_time_limit = 0.7155; }
-	else if (state.lines >= 10) { state.level = 2; state.tick_time_limit = 0.7987; }
 }
 
 static inline void step()
