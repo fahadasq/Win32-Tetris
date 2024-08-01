@@ -316,7 +316,7 @@ static inline void handle_board()
 			state.score += 40 * state.level;
 			state.latest_line_clear.time = state.time;
 			state.latest_line_clear.type = line_clear_single;
-			state.level = state.level;
+			state.latest_line_clear.level = state.level;
 			break;
 		}
 		case 2:
@@ -324,7 +324,7 @@ static inline void handle_board()
 			state.score += 100 * state.level;
 			state.latest_line_clear.time = state.time;
 			state.latest_line_clear.type = line_clear_double;
-			state.level = state.level;
+			state.latest_line_clear.level = state.level;
 			break;
 		}
 		case 3:
@@ -332,7 +332,7 @@ static inline void handle_board()
 			state.score += 300 * state.level;
 			state.latest_line_clear.time = state.time;
 			state.latest_line_clear.type = line_clear_triple;
-			state.level = state.level;
+			state.latest_line_clear.level = state.level;
 			break;
 		}
 		case 4:
@@ -340,7 +340,7 @@ static inline void handle_board()
 			state.score += 1200 * state.level;
 			state.latest_line_clear.time = state.time;
 			state.latest_line_clear.type = line_clear_tetris;
-			state.level = state.level;
+			state.latest_line_clear.level = state.level;
 			break;
 		}
 	}
