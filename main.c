@@ -87,16 +87,10 @@ int WINAPI wWinMain(
 
 	double last_time = 0;
 
-	memset(&state.board.tiles[16], 1, 10);
-	memset(&state.board.tiles[17], 1, 10);
-	memset(&state.board.tiles[18], 1, 10);
-	memset(&state.board.tiles[19], 1, 10);
-
 	state.current = spawn_tetrominos[6];
 	state.next = spawn_tetrominos[5];
 	state.tick_time_limit = 0.7987;
 	state.game_state = game_state_menu;
-	state.lines = 66;
 	state.level = 1;
 
 	while (msg.message != WM_QUIT)
