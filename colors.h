@@ -38,7 +38,7 @@
 #define MID_BORDER 0x005E5F91
 #define DARK_BORDER 0x00535280 
 
-typedef uint8_t tile;
+typedef uint8_t tile_t;
 
 #define TILE_EMPTY 0x0
 #define TILE_ORANGE 0x1
@@ -50,7 +50,7 @@ typedef uint8_t tile;
 #define TILE_RED 0x7
 #define TILE_BORDER 0x8
 
-static inline uint32_t bright_tile_color(tile color)
+static inline uint32_t bright_tile_color(tile_t color)
 {
 	switch (color)
 	{
@@ -76,7 +76,7 @@ static inline uint32_t bright_tile_color(tile color)
 	}
 }
 
-static inline uint32_t mid_tile_color(tile color)
+static inline uint32_t mid_tile_color(tile_t color)
 {
 	switch (color)
 	{
@@ -102,7 +102,7 @@ static inline uint32_t mid_tile_color(tile color)
 	}
 }
 
-static inline uint32_t dark_tile_color(tile color)
+static inline uint32_t dark_tile_color(tile_t color)
 {
 	switch (color)
 	{

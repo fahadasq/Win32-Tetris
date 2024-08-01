@@ -86,7 +86,7 @@ static inline void draw_quad(int x, int y, int width, int height, uint8_t color)
 	}
 }
 
-static inline void draw_tile(int x, int y, tile color)
+static inline void draw_tile(int x, int y, tile_t color)
 {
 	uint32_t bright_color = bright_tile_color(color);
 	uint32_t mid_color = mid_tile_color(color);

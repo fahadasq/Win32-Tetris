@@ -3,17 +3,19 @@
 #define BOARD_LEFT ((BITMAP_WIDTH - (TILE_SIZE*BOARD_WIDTH) ) / 2)
 #define BOARD_TOP 0
 
+
 typedef struct board
 {
-	tile tiles[20][10];
+	tile_t tiles[BOARD_HEIGHT][BOARD_HEIGHT];
 } board_t;
 
+// State is not yet declared at this point so we use dependency injection for most of these functions
 static inline void clear_board(board_t* board)
 {
 	memset(board, 0, sizeof(board_t));
 }
 
-static inline void draw_tile_on_board(int x, int y, tile color)
+static inline void draw_tile_on_board(int x, int y, tile_t color)
 {
 	draw_tile(BOARD_LEFT + (x * TILE_SIZE), BOARD_TOP + (y * TILE_SIZE), color);
 }
@@ -37,7 +39,7 @@ static inline void draw_board(board_t board)
 	{
 		for (int x = 0; x < BOARD_WIDTH; x++)
 		{
-			tile board_tile = board.tiles[y][x];
+			tile_t board_tile = board.tiles[y][x];
 
 			if (board_tile)
 			{
@@ -53,8 +55,8 @@ static inline void draw_tetromino_on_board(tetromino_t ttr)
 	{
 		for (int xx = 0; xx < 4; xx++)
 		{
-			int x = max(min(ttr.position.x+xx, 9), 0);
-			int y = max(min(ttr.position.y+yy, 19), 0);
+			int x = max(min(ttr.position.x+xx, BOARD_WIDTH - 1), 0);
+			int y = max(min(ttr.position.y+yy, BOARD_HEIGHT - 1), 0);
 
 			if ( (ttr.shape  >> (4*(3-yy)) ) & (1 << (3-xx)))
 			{
@@ -84,8 +86,8 @@ static inline void set_tetromino_on_board(board_t* board, tetromino_t ttr)
 	{
 		for (int xx = 0; xx < 4; xx++)
 		{
-			int x = max(min(ttr.position.x+xx, 9), 0);
-			int y = max(min(ttr.position.y+yy, 19), 0);
+			int x = max(min(ttr.position.x+xx, BOARD_WIDTH - 1), 0);
+			int y = max(min(ttr.position.y+yy, BOARD_HEIGHT - 1), 0);
 
 			if ( (ttr.shape  >> (4*(3-yy)) ) & (1 << (3-xx)))
 			{

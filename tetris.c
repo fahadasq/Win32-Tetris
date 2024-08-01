@@ -43,7 +43,6 @@ static inline void render_menu()
 	render_text_center_overlay(200, 200, "PRESS ENTER TO PLAY", back_color, front_color);
 }
 
-static inline void handle_tetromino_movement();
 
 static inline void render_preview_tetromino()
 {
@@ -304,7 +303,7 @@ static inline void handle_board()
 
 			for (int r = y; r > 0; r--)
 			{
-				memcpy(&state.board.tiles[r], &state.board.tiles[r-1], sizeof(tile) * 10);
+				memcpy(&state.board.tiles[r], &state.board.tiles[r-1], sizeof(tile_t) * 10);
 			}
 		}
 	}
