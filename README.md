@@ -1,5 +1,5 @@
 # Win32-Tetris
-This is a Tetris application made entirely using only the C programming language and the Win32 API. It uses a 400x300 device-independent bitmap (DIB) for rendering the graphics using the Windows Graphics Device Interface `gdi32.lib` library.
+This is a Tetris application made entirely using only the C programming language (C99) and the Win32 API. It uses a 400x300 device-independent bitmap (DIB) for rendering the graphics using the Windows Graphics Device Interface `gdi32.lib` library.
 
 ## Building
 The binaries are provided in the Release section but if you want to build it yourself, the `build.bat` file essentially contains everything you need to know to do so.
