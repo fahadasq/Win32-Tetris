@@ -38,6 +38,11 @@
 #define MID_BORDER 0x005E5F91
 #define DARK_BORDER 0x00535280 
 
+static inline uint32_t switch_colors(double time, int speed, uint32_t first, uint32_t second)
+{
+	return (int)(floor(time*speed)) % 2 ? first : second;
+}
+
 typedef uint8_t tile_t;
 
 #define TILE_EMPTY 0x0

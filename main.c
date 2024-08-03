@@ -49,7 +49,7 @@ typedef struct state
 {
 	board_t board;
 	tetromino_t current;
-	tetromino_t next;
+	tetromino_t next, second, third;
 	game_state_t game_state;
 
 	// the "tick" is the point at which the tetromino drops down 1 cell
@@ -70,10 +70,10 @@ static input_t input;
 #include "tetris.c"
 #include "window.c"
 
-int WINAPI wWinMain(
+int WINAPI WinMain(
 	HINSTANCE instance,
 	HINSTANCE prev_instance,
-	LPWSTR command_line,
+	LPSTR command_line,
 	int cmd_show)
 {
 	HWND window_handle = win32_create_window(instance);
@@ -87,8 +87,10 @@ int WINAPI wWinMain(
 
 	double last_time = 0;
 
-	state.current = spawn_tetrominos[6];
-	state.next = spawn_tetrominos[5];
+	state.current = spawn_tetrominos[0];
+	state.next = spawn_tetrominos[1];
+	state.second = spawn_tetrominos[2];
+	state.third = spawn_tetrominos[3];
 	state.tick_time_limit = 0.7987;
 	state.game_state = game_state_menu;
 	state.level = 1;

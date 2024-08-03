@@ -37,8 +37,8 @@ static inline void render_menu()
 		}
 	}
 
-	uint32_t back_color = (int)(floor(state.time*6)) % 2 ? DARK_YELLOW : DARK_YELLOW;
-	uint32_t front_color = (int)(floor(state.time*6)) % 2 ? BRIGHT_YELLOW : WHITE;
+	uint32_t back_color = DARK_YELLOW;
+	uint32_t front_color = switch_colors(state.time, 6, BRIGHT_YELLOW, WHITE);
 
 	render_text_center_overlay(200, 200, "PRESS ENTER TO PLAY", back_color, front_color);
 }
@@ -49,6 +49,8 @@ static inline void render_preview_tetromino()
 	render_text_overlay(32+1, 27+1, "NEXT", DARK_BORDER, MID_BORDER);
 	render_text(32, 27, "NEXT", WHITE);
 	draw_tetromino(-7, 3, state.next);
+	draw_tetromino(-7, 8, state.second);
+	draw_tetromino(-7, 13, state.third);
 }
 
 const char line_clear_string[4][9] =
@@ -76,14 +78,15 @@ static inline uint16_t line_clear_points(line_clear_type_t type)
 
 static inline void render_line_clear_message()
 {
-	render_text_overlay(25, 150, line_clear_string[state.latest_line_clear.type], DARK_RED, WHITE);
+	const v2_t pos = V2(25, 250);
+	render_text_overlay(pos.x, pos.y, line_clear_string[state.latest_line_clear.type], DARK_RED, WHITE);
 
 	char buf[11];
-	sprintf(buf, "%u * %u", line_clear_points(state.latest_line_clear.type), state.level);
-	render_text_overlay(25, 162, buf, DARK_RED, WHITE);
+	sprintf(buf, "%u * %u", line_clear_points(state.latest_line_clear.type), state.latest_line_clear.level);
+	render_text_overlay(pos.x, pos.y+12, buf, DARK_RED, WHITE);
 
-	sprintf(buf, "+ %u", line_clear_points(state.latest_line_clear.type) * state.level);
-	render_text_overlay(25, 174, buf, DARK_RED, WHITE);
+	sprintf(buf, "+ %u", line_clear_points(state.latest_line_clear.type) * state.latest_line_clear.level);
+	render_text_overlay(pos.x, pos.y+24, buf, DARK_RED, WHITE);
 }
 
 static inline void render_gameplay_stats()
@@ -95,34 +98,32 @@ static inline void render_gameplay_stats()
 	render_text(pos_x+1, pos_y+1, "LINES", MID_RED);
 	render_text(pos_x, pos_y, "LINES", WHITE);
 
-	char lines_buf[5] = {0};
-	sprintf(lines_buf, "%u", state.lines);
+	char buf[11] = {0};
+	sprintf(buf, "%u", state.lines);
 
-	render_text(pos_x+2, pos_y+2+12, lines_buf, DARK_RED);
-	render_text(pos_x+1, pos_y+1+12, lines_buf, MID_RED);
-	render_text(pos_x, pos_y+12, lines_buf, WHITE);
+	render_text(pos_x+2, pos_y+2+12, buf, DARK_RED);
+	render_text(pos_x+1, pos_y+1+12, buf, MID_RED);
+	render_text(pos_x, pos_y+12, buf, WHITE);
 
-	char score_buf[11] = {0};
-	sprintf(score_buf, "%u", state.score);
+	sprintf(buf, "%u", state.score);
 
 	render_text(pos_x+2, pos_y+2+32, "SCORE", DARK_BLUE);
 	render_text(pos_x+1, pos_y+1+32, "SCORE", MID_BLUE);
 	render_text(pos_x, pos_y+32, "SCORE", WHITE);
 
-	render_text(pos_x+2, pos_y+2+12+32, score_buf, DARK_BLUE);
-	render_text(pos_x+1, pos_y+1+12+32, score_buf, MID_BLUE);
-	render_text(pos_x, pos_y+12+32, score_buf, WHITE);
+	render_text(pos_x+2, pos_y+2+12+32, buf, DARK_BLUE);
+	render_text(pos_x+1, pos_y+1+12+32, buf, MID_BLUE);
+	render_text(pos_x, pos_y+12+32, buf, WHITE);
 
-	char level_buf[3] = {0};
-	sprintf(level_buf, "%u", state.level-1);
+	sprintf(buf, "%u", state.level-1);
 
 	render_text(pos_x+2, pos_y+2+64, "LEVEL", DARK_YELLOW);
 	render_text(pos_x+1, pos_y+1+64, "LEVEL", MID_YELLOW);
 	render_text(pos_x, pos_y+64, "LEVEL", WHITE);
 
-	render_text(pos_x+2, pos_y+2+12+64, level_buf, DARK_YELLOW);
-	render_text(pos_x+1, pos_y+1+12+64, level_buf, MID_YELLOW);
-	render_text(pos_x, pos_y+12+64, level_buf, WHITE);
+	render_text(pos_x+2, pos_y+2+12+64, buf, DARK_YELLOW);
+	render_text(pos_x+1, pos_y+1+12+64, buf, MID_YELLOW);
+	render_text(pos_x, pos_y+12+64, buf, WHITE);
 
 	if (state.latest_line_clear.time + 5.0 >= state.time)
 	{
@@ -152,7 +153,7 @@ static inline void render_loss_board()
 
 }
 
-static inline int check_tetromino_collisions(tetromino_t ttr, board_t board)
+static inline int check_tetromino_collisions()
 {
 	int result = 0;
 
@@ -160,10 +161,10 @@ static inline int check_tetromino_collisions(tetromino_t ttr, board_t board)
 	{
 		for (int xx = 0; xx < 4; xx++)
 		{
-			int x = max(min(ttr.position.x+xx, 9), 0);
-			int y = max(min(ttr.position.y+yy, 19), 0);
+			int x = max(min(state.current.position.x+xx, 9), 0);
+			int y = max(min(state.current.position.y+yy, 19), 0);
 
-			if ( (ttr.shape  >> (4*(3-yy)) ) & (1 << (3-xx)))
+			if ( is_tetromino_cell_at_point(state.current.shape, xx, yy) )
 			{
 				if (y == 0)
 				{
@@ -175,7 +176,7 @@ static inline int check_tetromino_collisions(tetromino_t ttr, board_t board)
 					result |= COLLISION_BOTTOM;
 				}
 
-				else if (board.tiles[y+1][x])
+				else if (state.board.tiles[y+1][x])
 				{
 					result |= COLLISION_BOTTOM;
 				}
@@ -184,7 +185,7 @@ static inline int check_tetromino_collisions(tetromino_t ttr, board_t board)
 				{
 					result |= COLLISION_RIGHT;
 				}
-				else if (board.tiles[y][x+1])
+				else if (state.board.tiles[y][x+1])
 				{
 					result |= COLLISION_RIGHT;
 				}
@@ -193,7 +194,7 @@ static inline int check_tetromino_collisions(tetromino_t ttr, board_t board)
 				{
 					result |= COLLISION_LEFT;
 				}
-				else if (board.tiles[y][x-1])
+				else if (state.board.tiles[y][x-1])
 				{
 					result |= COLLISION_LEFT;
 				}
@@ -229,7 +230,7 @@ static inline int check_tetromino_rotation_possible(int right)
 			int x = state.current.position.x+xx;
 			int y = state.current.position.y+yy;
 
-			if ((new_shape  >> (4*(3-yy)) ) & (1 << (3-xx)))
+			if (is_tetromino_cell_at_point(new_shape, xx, yy))
 			{
 				if (x > 9 || x < 0) return 0;
 				if (y > 19 || y < 0) return 0;
@@ -263,10 +264,12 @@ static inline void rotate_ttr_left()
 static inline void spawn()
 {
 	state.current = state.next;
+	state.next = state.second;
+	state.second = state.third;
 
 	int num = rand() % 7;
 
-	state.next = spawn_tetrominos[num];
+	state.third = spawn_tetrominos[num];
 }
 
 static inline void reset_game()
@@ -355,7 +358,7 @@ static inline void handle_board()
 
 static inline void step()
 {
-	int collision = check_tetromino_collisions(state.current, state.board);
+	int collision = check_tetromino_collisions();
 	if (collision & COLLISION_BOTTOM)
 	{
 		if (collision & COLLISION_CEILING)
@@ -380,7 +383,7 @@ static inline void step()
 
 static inline void handle_tetromino_movement()
 {
-	int collision = check_tetromino_collisions(state.current, state.board);
+	int collision = check_tetromino_collisions();
 
 	if (input.down && !(collision & COLLISION_BOTTOM))
 	{
